@@ -20,3 +20,9 @@ body[data-home="true"]>header,body[data-home="true"]>main{display:none}
 .home-prompt{font-size:10px;letter-spacing:.08em;text-align:center;color:#877078;margin:0;min-height:18px}
 @media(max-width:600px){.home{padding:30px 18px;gap:20px}.home-title{width:100%;margin:0}.booth-entry{width:min(80vw,43svh)}.home-signature{width:175px;margin:0}.home-prompt{font-size:9px;letter-spacing:.03em}}
 @media(prefers-reduced-motion:reduce){.booth-curtain,.booth-sign-dim,.booth-sign-light,.booth-room-light{transition:none}}
+
+body.studio-entering>header,body.studio-entering>main{animation:studio-reveal .55s ease-out both}
+@keyframes studio-reveal{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* Keep keyboard focus visible within the template instead of clipping at the grid edge. */
+body[data-step="1"] .layout-card:focus-visible{outline-offset:-3px;border-radius:6px}
+@media(prefers-reduced-motion:reduce){body.studio-entering>header,body.studio-entering>main{animation:none}}

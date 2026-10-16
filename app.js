@@ -1,4 +1,4 @@
-import {setupHome} from './home.js?v=home40';
+import {setupHome} from './home.js?v=home42';
 import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=save39';
