@@ -126,6 +126,10 @@ export function createStickerEditor(canvas, layer, redraw) {
     };
     tray.append(button);
   }
-  canvas.addEventListener('pointerdown',()=>{selected=null;sync()});
+  // The overlay covers the canvas, so listen outside individual stickers too.
+  document.addEventListener('pointerdown',e=>{
+    if(!selected||e.target.closest('.placed-sticker'))return;
+    selected=null;sync();
+  });
   return {sync,paint(target){const ctx=target.getContext('2d');ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.globalAlpha=1;ctx.filter='none';ctx.textAlign='center';ctx.textBaseline='middle';for(const item of items){ctx.font=`${item.size*target.width}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;ctx.save();ctx.translate(item.x*target.width,item.y*target.height);ctx.rotate(item.angle);if(artImages.has(item.emoji)){const im=artImages.get(item.emoji),w=item.size*target.width,h=w*item.ratio;ctx.drawImage(im,-w/2,-h/2,w,h)}else ctx.fillText(item.emoji,0,0);ctx.restore()}ctx.restore()}};
 }
