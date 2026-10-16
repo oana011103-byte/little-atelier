@@ -1,8 +1,8 @@
 import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=logo30';
-import {renderFrame} from './frame-art.js?v=borders33';
-import {textures,textureSwatch,loadTexture} from './textures.js?v=borders33';
+import {renderFrame} from './frame-art.js?v=checks37';
+import {textures,textureSwatch,loadTexture} from './textures.js?v=checks37';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
 import {layouts} from './layouts.js?v=logo30';
