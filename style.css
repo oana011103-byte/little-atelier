@@ -31,3 +31,7 @@ body[data-step="1"] .preview-area{display:none}body[data-step="1"] .studio{displ
 @media(max-width:650px){body[data-step="1"] .controls{padding:16px}body[data-step="1"] .layout-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}body[data-step="1"] .layout-card{height:160px;gap:10px}body[data-step="1"] .layout-diagram{height:110px}body[data-step="1"] .layout-name{font-size:11px}}
 /* Open layout gallery: no panel or card surfaces. */
 body[data-step="1"] .controls{background:transparent;border-radius:0;padding:12px 0}body[data-step="1"] .layout-card,body[data-step="1"] .layout-card.selected{background:transparent;border-radius:0;box-shadow:none}body[data-step="1"] .layout-diagram{filter:none}body[data-step="1"] .layout-name{padding:4px 0;border-bottom:2px solid transparent}body[data-step="1"] .layout-card.selected .layout-name{border-bottom-color:#ba8098}body[data-step="1"] .layout-card:hover .layout-name{color:#9c5274}
+/* Subtle template selection feedback. */
+body[data-step="1"] .layout-card{transition:transform 120ms ease}body[data-step="1"] .layout-card:active{transform:scale(.97)}body[data-step="1"] .layout-card.just-selected .layout-diagram{animation:layout-select 280ms ease-out}
+@keyframes layout-select{0%{transform:scale(.97)}60%{transform:scale(1.025)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){body[data-step="1"] .layout-card{transition:none}body[data-step="1"] .layout-card:active{transform:none}body[data-step="1"] .layout-card.just-selected .layout-diagram{animation:none}}
