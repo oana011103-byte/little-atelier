@@ -1,10 +1,10 @@
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
-import {createStickerEditor} from './sticker-editor.js?v=template27';
-import {renderFrame} from './frame-art.js?v=template27';
-import {textures,textureSwatch,loadTexture} from './textures.js?v=template27';
+import {createStickerEditor} from './sticker-editor.js?v=logo30';
+import {renderFrame} from './frame-art.js?v=logo30';
+import {textures,textureSwatch,loadTexture} from './textures.js?v=logo30';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
-import {layouts} from './layouts.js?v=template27';
+import {layouts} from './layouts.js?v=logo30';
 const state={frameCategory:'all',step:1,layout:layouts[0],category:'all',color:'#fffaf0',frame:'plain',caption:'',filter:'original',photos:[],demo:true,stream:null,busy:false,token:0,timer:5,mode:'single',cameraStarting:false,cameraReady:false,cameraError:''};
 const stickerEditor=createStickerEditor($('#strip'),$('.sticker-layer'),draw);
 const sample=new Image();sample.src='assets/portrait.jpg';sample.onload=draw;
@@ -24,7 +24,7 @@ function render(){
  $('#framePicker').hidden=state.step!==3;$('.sticker-picker').hidden=state.step!==4;
  $('.sticker-layer').style.pointerEvents=state.step===4?'auto':'none';
  if(state.step===1){
- panel.innerHTML=title('Choose your layout')+`<div class="layout-grid">${layouts.map(l=>`<button class="layout-card ${l.id===state.layout.id?'selected':''}" data-layout="${l.id}" aria-pressed="${l.id===state.layout.id}"><svg class="layout-diagram" viewBox="0 0 ${l.width} ${l.height}" aria-hidden="true"><rect width="${l.width}" height="${l.height}" fill="white"/>${l.cells.map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#d5d3d4"/>`).join('')}</svg><span class="layout-name">${l.name}</span></button>`).join('')}</div><p class="hint">${state.layout.name}</p><button class="primary" id="toCamera" aria-label="Open camera"><span aria-hidden="true">📷</span></button><button class="secondary" id="upload">↑ Upload</button><input type="file" id="files" accept="image/*" multiple hidden>`;
+ panel.innerHTML=title('Choose your layout')+`<div class="layout-grid">${layouts.map(l=>`<button class="layout-card ${l.id===state.layout.id?'selected':''}" data-layout="${l.id}" aria-pressed="${l.id===state.layout.id}"><svg class="layout-diagram" viewBox="0 0 ${l.width} ${l.height}" aria-hidden="true"><rect width="${l.width}" height="${l.height}" fill="white"/>${l.cells.map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#d5d3d4"/>`).join('')}${l.logo.paths.map(d=>`<path d="${d}" fill="#292729"/>`).join('')}</svg><span class="layout-name">${l.name}</span></button>`).join('')}</div><p class="hint">${state.layout.name}</p><button class="primary" id="toCamera" aria-label="Open camera"><span aria-hidden="true">📷</span></button><button class="secondary" id="upload">↑ Upload</button><input type="file" id="files" accept="image/*" multiple hidden>`;
  panel.querySelectorAll('[data-layout]').forEach(b=>b.onclick=()=>{const scroll=$('.layout-grid').scrollLeft;state.layout=layouts.find(l=>l.id===b.dataset.layout);render();$('.layout-grid').scrollLeft=scroll});$('#toCamera').onclick=()=>setStep(2);$('#upload').onclick=()=>$('#files').click();$('#files').onchange=upload;
  }else if(state.step===2){
  panel.innerHTML=title('Make a little memory')+`<div class="camera-box"><div class="camera-empty">Camera preview</div><video id="video" autoplay muted playsinline></video><span class="counter" aria-live="assertive"></span></div><div class="row"><button id="enableCamera">Enable camera</button><button id="upload">Upload photos</button><input type="file" id="files" accept="image/*" multiple hidden></div><div class="camera-options"><fieldset><legend>Timer</legend><div class="segmented">${[0,3,5,10].map(n=>`<button type="button" data-timer="${n}" aria-pressed="${state.timer===n}">${n?n+'s':'Off'}</button>`).join('')}</div></fieldset><fieldset><legend>Mode</legend><div class="segmented">${[['single','Single shot'],['auto','Auto sequence']].map(([id,label])=>`<button type="button" data-mode="${id}" aria-pressed="${state.mode===id}">${label}</button>`).join('')}</div></fieldset></div><p id="cameraStatus" class="camera-status" role="status" hidden></p><div class="thumbnails"></div><p class="hint">${Math.min(state.photos.length,state.layout.count)} / ${state.layout.count} photos · take your time between poses</p><button class="primary" id="capture" disabled>${state.photos.length>=state.layout.count?'Retake photos':'Take photo'} <span>📷</span></button><button class="secondary" id="toEdit" ${state.photos.length>=state.layout.count?'':'disabled'}>Choose borders →</button>`;

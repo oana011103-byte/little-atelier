@@ -23,6 +23,8 @@ export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
   const f={original:'none',bw:'grayscale(1)',warm:'sepia(.35) saturate(.8)',soft:'contrast(.88) brightness(1.12) saturate(.75)'}[state.filter];
   photo(ctx,im,x,y,cellW,cellH,f,i,im===sample);
  }
- if(state.caption){ctx.textAlign='center';ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#67584f';ctx.font=`${Math.max(18,w*.035)}px Courier New,monospace`;let caption=state.caption;while(ctx.measureText(caption).width>w-140&&caption.length)caption=caption.slice(0,-1);ctx.fillText(caption,w/2,h-Math.min(40,h*.045))}
+ const logo=state.layout.logo;
+ if(logo){ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#292729';for(const path of logo.paths)ctx.fill(new Path2D(path))}
+ if(state.caption){ctx.textAlign='center';ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#67584f';const photoBottom=Math.max(...cells.map(([,y,,height])=>y+height));const captionSize=Math.max(8,Math.min(28,w*.035,(logo?.top??h)-photoBottom-16));ctx.font=`${captionSize}px Courier New,monospace`;let caption=state.caption;while(ctx.measureText(caption).width>w-140&&caption.length)caption=caption.slice(0,-1);ctx.fillText(caption,w/2,Math.min(h-Math.min(40,h*.045),(logo?.top??h)-12))}
  return {width:w,height:h};
 }
