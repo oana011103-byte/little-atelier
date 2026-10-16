@@ -25,3 +25,7 @@ body[data-step="2"] .preview-area{display:none}body[data-step="2"] .studio{grid-
 .layout-diagram{width:74px;height:72px;flex-shrink:0;filter:drop-shadow(0 2px 4px #0001)}
 
 @media(min-width:1000px){body[data-step="1"] .controls{overflow-y:auto;max-height:100%}body[data-step="1"] .layout-card{height:100px;gap:6px}body[data-step="1"] .layout-diagram{height:62px}}
+/* Layout selection is a full-width gallery without a separate preview. */
+body[data-step="1"] .preview-area{display:none}body[data-step="1"] .studio{display:block;min-height:0}body[data-step="1"] .controls{height:100%;overflow-y:auto;padding:24px}body[data-step="1"] .layout-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;overflow:visible;padding:0;margin:0}body[data-step="1"] .layout-card{width:100%;height:clamp(145px,25vh,220px);gap:14px}body[data-step="1"] .layout-diagram{width:80%;height:65%;max-height:145px}body[data-step="1"] .layout-name{font-size:12px}body[data-step="1"] .controls>.hint{display:none}
+@media(max-width:999px){body[data-step="1"] .layout-grid{grid-template-columns:repeat(3,minmax(0,1fr))}body[data-step="1"] .controls{height:auto}}
+@media(max-width:650px){body[data-step="1"] .controls{padding:16px}body[data-step="1"] .layout-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}body[data-step="1"] .layout-card{height:160px;gap:10px}body[data-step="1"] .layout-diagram{height:110px}body[data-step="1"] .layout-name{font-size:11px}}
