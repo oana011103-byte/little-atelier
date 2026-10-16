@@ -1,5 +1,5 @@
 const artNames=['Angel wings','Pink balloons','Candy buttons','I love me','Green flower','Blue bow','Happy birthday','My dear'];
-const art=artNames.map((name,i)=>({emoji:`art-${i+1}`,name,search:name.toLowerCase(),group:'art',src:`assets/supplied/sticker-${i+1}.png`}));
+const art=artNames.map((name,i)=>({emoji:`art-${i+1}`,name,search:name.toLowerCase(),group:'art',src:`assets/optimized/sticker-${i+1}.webp`,thumb:`assets/optimized/sticker-${i+1}-thumb.webp`}));
 const artImages=new Map();
 export function createStickerEditor(canvas, layer, redraw) {
   let choices = [], category = 'art', query = '', page = 0;
@@ -30,10 +30,11 @@ export function createStickerEditor(canvas, layer, redraw) {
   for(const [id,label] of categories){const b=document.createElement('button');b.textContent=label;b.dataset.category=id;b.onclick=()=>{category=id;query='';renderLibrary()};tabs.append(b)}
   more.onclick=()=>{page++;renderLibrary(false)};
   async function loadLibrary(){
-    status.textContent='Loading…';
+    if(category!=='art')status.textContent='Loading…';
     try{const response=await fetch('assets/emoji-catalog.json');if(!response.ok)throw new Error('catalog');choices=await response.json();choices.forEach(c=>{c.name=c.english||c.emoji});renderLibrary()}
     catch{status.textContent='Could not load stickers';more.hidden=false;more.textContent='Retry';more.onclick=()=>{more.textContent='More';more.onclick=()=>{page++;renderLibrary(false)};loadLibrary()}}
   }
+  renderLibrary();
   loadLibrary();
   const clamp = v => Math.max(0, Math.min(1, v));
   function position(e) {
@@ -104,7 +105,7 @@ export function createStickerEditor(canvas, layer, redraw) {
   }
   function remove(item) {const index=items.indexOf(item);if(index>=0)items.splice(index,1);selected=null;redraw()}
   function makeChoice(emoji,name) {
-    const button=document.createElement('button');const asset=art.find(a=>a.emoji===emoji);if(asset){const img=new Image();img.src=asset.src;img.alt=name;img.draggable=false;button.append(img)}else button.textContent=emoji;button.setAttribute('aria-label',`Add ${name}`);
+    const button=document.createElement('button');const asset=art.find(a=>a.emoji===emoji);if(asset){const img=new Image();img.src=asset.thumb;img.alt=name;img.draggable=false;button.append(img)}else button.textContent=emoji;button.setAttribute('aria-label',`Add ${name}`);
     let dragged=false;
     button.onclick=()=>{if(!dragged)add(emoji,name);dragged=false};
     button.onpointerdown=e=>{
@@ -114,7 +115,7 @@ export function createStickerEditor(canvas, layer, redraw) {
       button.onpointermove=event=>{
         if(Math.hypot(event.clientX-startX,event.clientY-startY)>5)dragged=true;
         if(!dragged)return;
-        if(!ghost){ghost=document.createElement('div');ghost.className='sticker-ghost';if(asset){const img=new Image();img.src=asset.src;img.style.width='70px';ghost.append(img)}else ghost.textContent=emoji;ghost.setAttribute('aria-hidden','true');document.body.append(ghost)}
+        if(!ghost){ghost=document.createElement('div');ghost.className='sticker-ghost';if(asset){const img=new Image();img.src=asset.thumb;img.style.width='70px';ghost.append(img)}else ghost.textContent=emoji;ghost.setAttribute('aria-hidden','true');document.body.append(ghost)}
         ghost.style.left=`${event.clientX}px`;ghost.style.top=`${event.clientY}px`;
       };
       const end=event=>{
