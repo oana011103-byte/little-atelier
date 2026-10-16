@@ -18,7 +18,10 @@ function setStep(n){
 }
 function title(t){return `<div class="title-row"><h2>${t}</h2></div>`}
 function next(label,id='next'){return `<button class="primary" id="${id}">${label} <span>→</span></button>`}
+let lastRenderedStep=null;
 function render(){
+ const enteringSave=state.step===5&&lastRenderedStep!==5;lastRenderedStep=state.step;
+ if(state.step!==5)document.querySelector('.save-confetti')?.remove();
  document.body.dataset.step=state.step;
  document.querySelectorAll('.step').forEach(b=>{b.classList.toggle('active',+b.dataset.step===state.step);b.setAttribute('aria-current',+b.dataset.step===state.step?'step':'false')});
  const panel=$('#controlPanel');$('#pageActions').replaceChildren();
@@ -49,6 +52,7 @@ function render(){
  $('.preview-heading > span').textContent=state.step===5?'your photostrip!':'Your preview';
  $('#toggleDemo').hidden=state.step===5;$('#saveImage').hidden=state.step!==5;$('#strip').hidden=state.step===5;
  draw();
+ if(enteringSave)celebrateSave();
 }
 function cameraStatus(message,error=false){const el=$('#cameraStatus');if(!el)return;el.hidden=!message;el.textContent=message;el.classList.toggle('error',error)}
 function cameraFailed(error,stream,token){
@@ -153,4 +157,17 @@ function renderRetroControls(){
  panel.innerHTML=`<div class="retro-presets">${[['soft','Old paper'],['grain','Grain film'],['cool','Cool mono']].map(([id,label])=>`<button data-retro-preset="${id}" aria-pressed="${JSON.stringify(state.retro)===JSON.stringify(retroPresets[id])}">${label}</button>`).join('')}</div>`+fields.map(([id,label,min,max,step])=>`<label class="retro-slider" for="retro-${id}"><span>${label}<output id="retro-value-${id}">${state.retro[id]}</output></span><input id="retro-${id}" data-retro="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${state.retro[id]}"></label>`).join('')+'<button class="retro-reset" id="resetRetro">Reset filter</button>';
  panel.querySelectorAll('[data-retro]').forEach(input=>input.oninput=()=>{state.retro[input.dataset.retro]=+input.value;$('#retro-value-'+input.dataset.retro).textContent=input.value;panel.querySelectorAll('[data-retro-preset]').forEach(b=>b.setAttribute('aria-pressed','false'));cancelAnimationFrame(renderRetroControls.raf);renderRetroControls.raf=requestAnimationFrame(draw)});
  panel.querySelectorAll('[data-retro-preset]').forEach(b=>b.onclick=()=>{state.retro={...retroPresets[b.dataset.retroPreset]};renderRetroControls();draw()});$('#resetRetro').onclick=()=>{state.retro={...retroPresets.soft};renderRetroControls();draw()};
+}
+
+function celebrateSave(){
+ document.querySelector('.save-confetti')?.remove();
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const layer=document.createElement('div');layer.className='save-confetti';layer.setAttribute('aria-hidden','true');
+ const colors=['#e9a7c2','#f5d8a5','#b7cbe5','#cbb9dd','#f4c8b5','#fff5df'];
+ for(let i=0;i<64;i++){
+  const piece=document.createElement('i'),angle=Math.random()*Math.PI*2,distance=80+Math.random()*320;
+  piece.style.cssText=`--burst-x:${Math.cos(angle)*distance}px;--burst-y:${Math.sin(angle)*distance*.65-80}px;--fall-x:${Math.cos(angle)*distance*1.35}px;--spin:${Math.random()*1080-540}deg;--delay:${Math.random()*100}ms;--duration:${1400+Math.random()*650}ms;--color:${colors[i%colors.length]};--piece-w:${4+Math.random()*4}px;--piece-h:${9+Math.random()*9}px`;
+  layer.append(piece);
+ }
+ document.body.append(layer);setTimeout(()=>layer.remove(),2300);
 }
