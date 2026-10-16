@@ -1,3 +1,4 @@
+import {setupHome} from './home.js?v=home40';
 import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=save39';
@@ -172,3 +173,5 @@ function celebrateSave(){
  }
  document.body.append(layer);setTimeout(()=>layer.remove(),2300);
 }
+
+setupHome({onEnter:()=>setStep(1),onReturn:stopCamera});
