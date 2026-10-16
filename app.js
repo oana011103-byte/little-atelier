@@ -1,7 +1,7 @@
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
-import {createStickerEditor} from './sticker-editor.js?v=footer23';
-import {renderFrame} from './frame-art.js?v=footer23';
-import {textures,textureSwatch,loadTexture} from './textures.js?v=footer23';
+import {createStickerEditor} from './sticker-editor.js?v=fit25';
+import {renderFrame} from './frame-art.js?v=fit25';
+import {textures,textureSwatch,loadTexture} from './textures.js?v=fit25';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
 const layouts=[{id:'classic',name:'Classic 4-cut',count:4,cols:1,kind:'strip'},{id:'trio',name:'Film 3-cut',count:3,cols:1,kind:'strip'},{id:'duo',name:'Double',count:2,cols:1,kind:'strip'},{id:'grid',name:'Wide 4-cut',count:4,cols:2,kind:'special'},{id:'single',name:'Polaroid',count:1,cols:1,kind:'special'},{id:'six',name:'Basic 6-cut',count:6,cols:2,kind:'special'}];
@@ -39,7 +39,7 @@ function render(){
  }else if(state.step===4){
  panel.innerHTML=title('Make it yours')+`<p class="hint">Tap to add. Drag, resize & rotate on your photo.</p><input class="text-input" id="caption" aria-label="Optional caption" maxlength="40" placeholder="A little note (optional)">`+next('Ready to save');$('#caption').value=state.caption;$('#caption').oninput=e=>{state.caption=e.target.value;draw()};$('#next').onclick=()=>setStep(5);
  }else{
- panel.innerHTML=`<div class="save-options"><label for="format">Save as </label><select id="format"><option value="png">PNG</option><option value="jpeg">JPG</option></select></div><p class="save-hint">Press and hold your photo to save it on your phone.</p>`+next('↓ Download','download')+`<button class="secondary" id="share">↗ Share</button><button class="text-back" id="again">Back to stickers</button>`;$('#download').onclick=download;$('#share').onclick=sharePhoto;$('#again').onclick=()=>setStep(4);
+ panel.innerHTML=`<div class="save-options"><label for="format">Save as </label><select id="format"><option value="png">PNG</option><option value="jpeg">JPG</option></select></div><p class="save-hint">Press and hold your photo to save it on your phone.</p>`+`<button class="primary" id="download">Download</button>`+`<button class="secondary" id="share">Share</button><button class="text-back" id="again">Back to stickers</button>`;$('#download').onclick=download;$('#share').onclick=sharePhoto;$('#again').onclick=()=>setStep(4);
 
  }
  const actions=$('#pageActions');
@@ -131,7 +131,7 @@ async function sharePhoto(){
  if(navigator.share&&navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:'My photostrip'})}catch(e){if(e.name!=='AbortError')toast('Could not share. Please use Download.')}}else{download();toast('Sharing is not supported here. Your photo was downloaded.')}
 }
 function download(){if(state.photos.length<state.layout.count)return toast('Finish taking your photos first.');const format=$('#format').value;$('#strip').toBlob(blob=>{if(!blob)return toast('Export failed. Please retry.');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`photobooth-${Date.now()}.${format==='jpeg'?'jpg':'png'}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);toast('Your photo is ready.')},`image/${format}`,.95)}
-document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>setStep(+b.dataset.step));$('#toggleDemo').onclick=()=>{state.demo=!state.demo;draw()};$('#navBooth').onclick=()=>setStep(1);$('#navAbout').onclick=()=>$('#about').showModal();$('#about .close').onclick=()=>$('#about').close();$('#about').onclick=e=>{if(e.target===$('#about'))$('#about').close()};
+document.querySelectorAll('.steps [data-step]').forEach(b=>b.onclick=()=>setStep(+b.dataset.step));$('#toggleDemo').onclick=()=>{state.demo=!state.demo;draw()};$('#navBooth').onclick=()=>setStep(1);$('#navAbout').onclick=()=>$('#about').showModal();$('#about .close').onclick=()=>$('#about').close();$('#about').onclick=e=>{if(e.target===$('#about'))$('#about').close()};
 window.addEventListener('pagehide',stopCamera);
 renderFrameLibrary();render();
 document.fonts.ready.then(draw);
