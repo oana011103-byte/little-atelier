@@ -1,4 +1,5 @@
-import {paintTexture} from './textures.js?v=template27';
+import {retroImage} from './retro-filter.js?v=retro32';
+import {paintTexture} from './textures.js?v=logo30';
 function darkColor(hex){const v=hex.replace('#','');const rgb=[0,2,4].map(i=>parseInt(v.slice(i,i+2),16));return rgb[0]*.299+rgb[1]*.587+rgb[2]*.114<130}
 function random(seed=71){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}}
 function paper(ctx,w,h,color){
@@ -9,7 +10,7 @@ function paper(ctx,w,h,color){
   for(let i=0;i<130;i++){const x=r()*w,y=r()*h;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+7+r()*24,y+r()*5);ctx.stroke()}
 }
 function photo(ctx,image,x,y,w,h,filter,index,isSample){
- ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();if(image){ctx.filter=filter;const z=isSample?[1,1.2,1.08,1.32,1.1,1][index]:1;const scale=Math.max(w/image.naturalWidth,h/image.naturalHeight)*z;const dw=image.naturalWidth*scale,dh=image.naturalHeight*scale;ctx.drawImage(image,x+(w-dw)/2,y+(h-dh)*(isSample?.26:.5),dw,dh)}else{ctx.fillStyle='#d5d3d4';ctx.fillRect(x,y,w,h);ctx.fillStyle='#f5f5ee';ctx.font='40px Courier New,monospace';ctx.textAlign='center';ctx.fillText(String(index+1).padStart(2,'0'),x+w/2,y+h/2+15)}ctx.restore();
+ ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();if(image){ctx.filter=filter;const z=isSample?[1,1.2,1.08,1.32,1.1,1][index]:1;const scale=Math.max(w/(image.naturalWidth||image.width),h/(image.naturalHeight||image.height))*z;const dw=(image.naturalWidth||image.width)*scale,dh=(image.naturalHeight||image.height)*scale;ctx.drawImage(image,x+(w-dw)/2,y+(h-dh)*(isSample?.26:.5),dw,dh)}else{ctx.fillStyle='#d5d3d4';ctx.fillRect(x,y,w,h);ctx.fillStyle='#f5f5ee';ctx.font='40px Courier New,monospace';ctx.textAlign='center';ctx.fillText(String(index+1).padStart(2,'0'),x+w/2,y+h/2+15)}ctx.restore();
 }
 export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
  const {count,width:w,height:h,cells}=state.layout;
@@ -21,7 +22,7 @@ export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
   const [x,y,cellW,cellH]=cells[i];
   const im=state.photos[i]||(state.demo&&sample?.complete&&sample.naturalWidth?sample:null);
   const f={original:'none',bw:'grayscale(1)',warm:'sepia(.35) saturate(.8)',soft:'contrast(.88) brightness(1.12) saturate(.75)'}[state.filter];
-  photo(ctx,im,x,y,cellW,cellH,f,i,im===sample);
+  photo(ctx,im&&state.filter==='retro'?retroImage(im,state.retro):im,x,y,cellW,cellH,f||'none',i,im===sample);
  }
  const logo=state.layout.logo;
  if(logo){ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#292729';for(const path of logo.paths)ctx.fill(new Path2D(path))}

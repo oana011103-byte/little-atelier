@@ -1,11 +1,12 @@
+import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=logo30';
-import {renderFrame} from './frame-art.js?v=logo30';
+import {renderFrame} from './frame-art.js?v=retro32';
 import {textures,textureSwatch,loadTexture} from './textures.js?v=logo30';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
 import {layouts} from './layouts.js?v=logo30';
-const state={frameCategory:'all',step:1,layout:layouts[0],category:'all',color:'#fffaf0',frame:'plain',caption:'',filter:'original',photos:[],demo:true,stream:null,busy:false,token:0,timer:5,mode:'single',cameraStarting:false,cameraReady:false,cameraError:''};
+const state={frameCategory:'all',step:1,layout:layouts[0],category:'all',color:'#fffaf0',frame:'plain',caption:'',filter:'retro',retro:{...retroPresets.soft},photos:[],demo:true,stream:null,busy:false,token:0,timer:5,mode:'single',cameraStarting:false,cameraReady:false,cameraError:''};
 const stickerEditor=createStickerEditor($('#strip'),$('.sticker-layer'),draw);
 const sample=new Image();sample.src='assets/portrait.jpg';sample.onload=draw;
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('show'),4000)}
@@ -35,7 +36,7 @@ function render(){
  if(state.stream)resumeCamera();else if(state.cameraStarting){$('#enableCamera').disabled=true;cameraStatus('Waiting for camera permission…')}else if(state.cameraError)cameraStatus(state.cameraError,true);
  $('#upload').onclick=()=>$('#files').click();$('#files').onchange=upload;$('#capture').onclick=capture;$('#toEdit').onclick=()=>setStep(3);
  }else if(state.step===3){
- panel.innerHTML=title('Find your finish')+`<label class="label" for="filter">Photo filter</label><select id="filter" class="filter-select"><option value="original">Original</option><option value="bw">Black & white</option><option value="warm">Vintage</option><option value="soft">Soft</option></select>`+next('Add stickers');$('#filter').value=state.filter;$('#filter').onchange=e=>{state.filter=e.target.value;draw()};$('#next').onclick=()=>setStep(4);
+ panel.innerHTML=title('Find your finish')+`<label class="label" for="filter">Photo filter</label><select id="filter" class="filter-select"><option value="retro">Retro monochrome</option><option value="original">Original</option><option value="bw">Black & white</option><option value="warm">Vintage</option><option value="soft">Soft</option></select><div id="retroControls"></div>`+next('Add stickers');$('#filter').value=state.filter;$('#filter').onchange=e=>{state.filter=e.target.value;renderRetroControls();draw()};renderRetroControls();$('#next').onclick=()=>setStep(4);
  }else if(state.step===4){
  panel.innerHTML=title('Make it yours')+`<p class="hint">Tap to add. Drag, resize & rotate on your photo.</p><input class="text-input" id="caption" aria-label="Optional caption" maxlength="40" placeholder="A little note (optional)">`+next('Ready to save');$('#caption').value=state.caption;$('#caption').oninput=e=>{state.caption=e.target.value;draw()};$('#next').onclick=()=>setStep(5);
  }else{
@@ -144,3 +145,11 @@ function fitPreview(w=$('#strip').width,h=$('#strip').height){
  $('.paper-wrap').style.width=`${Math.min(availableWidth,availableHeight*w/h)}px`;
 }
 new ResizeObserver(()=>fitPreview()).observe($('.preview-stage'));
+
+function renderRetroControls(){
+ const panel=$('#retroControls');panel.hidden=state.filter!=='retro';if(panel.hidden)return;
+ const fields=[['contrast','Contrast',-30,40,1],['brightness','Brightness',-35,35,1],['fade','Fade',0,55,1],['warmth','Warmth',0,60,1],['grain','Grain',0,55,1],['blur','Soft focus',0,2,.1]];
+ panel.innerHTML=`<div class="retro-presets">${[['soft','Old paper'],['grain','Grain film'],['cool','Cool mono']].map(([id,label])=>`<button data-retro-preset="${id}" aria-pressed="${JSON.stringify(state.retro)===JSON.stringify(retroPresets[id])}">${label}</button>`).join('')}</div>`+fields.map(([id,label,min,max,step])=>`<label class="retro-slider" for="retro-${id}"><span>${label}<output id="retro-value-${id}">${state.retro[id]}</output></span><input id="retro-${id}" data-retro="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${state.retro[id]}"></label>`).join('')+'<button class="retro-reset" id="resetRetro">Reset filter</button>';
+ panel.querySelectorAll('[data-retro]').forEach(input=>input.oninput=()=>{state.retro[input.dataset.retro]=+input.value;$('#retro-value-'+input.dataset.retro).textContent=input.value;panel.querySelectorAll('[data-retro-preset]').forEach(b=>b.setAttribute('aria-pressed','false'));cancelAnimationFrame(renderRetroControls.raf);renderRetroControls.raf=requestAnimationFrame(draw)});
+ panel.querySelectorAll('[data-retro-preset]').forEach(b=>b.onclick=()=>{state.retro={...retroPresets[b.dataset.retroPreset]};renderRetroControls();draw()});$('#resetRetro').onclick=()=>{state.retro={...retroPresets.soft};renderRetroControls();draw()};
+}
