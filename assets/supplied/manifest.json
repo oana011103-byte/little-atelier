@@ -1,0 +1,127 @@
+[
+  {
+    "file": "sticker-1.png",
+    "original": "素材/贴纸/angle.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "sticker-2.png",
+    "original": "素材/贴纸/图层 2.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "sticker-3.png",
+    "original": "素材/贴纸/图层 1.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "sticker-4.png",
+    "original": "素材/贴纸/图层 4.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "sticker-5.png",
+    "original": "素材/贴纸/矢量智能对象.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "sticker-6.png",
+    "original": "素材/贴纸/96214586-6622-45ab-a78b-ea9f4fcb1faa.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "sticker-7.png",
+    "original": "素材/贴纸/4dc6617a-4684-4e9d-9c57-f7b060c91808.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "sticker-8.png",
+    "original": "素材/贴纸/my dear.png",
+    "kind": "sticker"
+  },
+  {
+    "file": "border-1.jpg",
+    "original": "素材/背景:框/2-4-04.jpg",
+    "kind": "border"
+  },
+  {
+    "file": "border-2.jpg",
+    "original": "素材/背景:框/5977C661-694C-44AC-8FEE-180FCCDD8360.JPG",
+    "kind": "border"
+  },
+  {
+    "file": "border-3.png",
+    "original": "素材/背景:框/条纹.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-4.png",
+    "original": "素材/背景:框/羽毛.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-5.jpg",
+    "original": "素材/背景:框/0F55C14D-E082-4DA2-B745-B95ABFFA78B0.JPG",
+    "kind": "border"
+  },
+  {
+    "file": "border-6.png",
+    "original": "素材/背景:框/格子1.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-7.png",
+    "original": "素材/背景:框/格子2.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-8.png",
+    "original": "素材/背景:框/波点3.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-9.jpg",
+    "original": "素材/背景:框/F27919E6-121F-46C2-A29D-C24A6251B84D.JPG",
+    "kind": "border"
+  },
+  {
+    "file": "border-10.png",
+    "original": "素材/背景:框/豹纹.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-11.jpg",
+    "original": "素材/背景:框/5E31DC11-3F36-44C2-93D8-2539F49F9AC5.JPG",
+    "kind": "border"
+  },
+  {
+    "file": "border-12.png",
+    "original": "素材/背景:框/b60aa22c-e437-4f0e-8e62-f5f101f40b8a.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-13.jpg",
+    "original": "素材/背景:框/5cad840ac7841a2bc2d9a8c31e42ff03.jpg",
+    "kind": "border"
+  },
+  {
+    "file": "border-14.jpg",
+    "original": "素材/背景:框/5BEB02F0-3EE1-4084-A4C3-20D50F50A812.JPG",
+    "kind": "border"
+  },
+  {
+    "file": "border-15.png",
+    "original": "素材/背景:框/小鹿.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-16.png",
+    "original": "素材/背景:框/猫.png",
+    "kind": "border"
+  },
+  {
+    "file": "border-17.png",
+    "original": "素材/背景:框/生成细纹牛仔裤背景素材.png",
+    "kind": "border"
+  }
+]

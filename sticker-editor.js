@@ -1,7 +1,10 @@
+const artNames=['Angel wings','Pink balloons','Candy buttons','I love me','Green flower','Blue bow','Happy birthday','My dear'];
+const art=artNames.map((name,i)=>({emoji:`art-${i+1}`,name,search:name.toLowerCase(),group:'art',src:`assets/supplied/sticker-${i+1}.png`}));
+const artImages=new Map();
 export function createStickerEditor(canvas, layer, redraw) {
-  let choices = [], category = 'recommended', query = '', page = 0;
+  let choices = [], category = 'art', query = '', page = 0;
   const favorites = ['🌷','🍒','🎀','🦋','🍀','🍓','🐰','💗','⭐','🌼','🫧','🪿','🧸','🪩','🪽','🍰','🦢','🩰','🐈','🪷','🍋','🧁','💌','🎧'];
-  const categories = [['recommended','精选'],['recent','最近'],['all','全部'],['Smileys & Emotion','表情'],['People & Body','人物'],['Animals & Nature','自然'],['Food & Drink','食物'],['Travel & Places','旅行'],['Activities','活动'],['Objects','物品'],['Symbols','符号'],['Flags','旗帜']];
+  const categories = [['art','Stickers'],['recommended','Emoji'],['recent','Recent'],['all','All emoji'],['Smileys & Emotion','Faces'],['Animals & Nature','Nature'],['Food & Drink','Food'],['Objects','Objects'],['Symbols','Symbols']];
   let recent = [];
   try { const saved=JSON.parse(localStorage.getItem('petal-recent-emoji')||'[]'); if(Array.isArray(saved))recent=saved.filter(x=>typeof x==='string').slice(0,32); } catch {}
   const items = [];
@@ -12,7 +15,8 @@ export function createStickerEditor(canvas, layer, redraw) {
   const status=document.querySelector('#emojiStatus');
   const more=document.querySelector('#emojiMore');
   function filtered(){
-    if(query)return choices.filter(c=>c.search.includes(query)||c.emoji.includes(query));
+    if(category==='art'&&!query)return art;
+    if(query)return [...art,...choices].filter(c=>c.search.includes(query)||c.emoji.includes(query));
     if(category==='recommended'||category==='recent')return (category==='recent'?recent:favorites).map(e=>choices.find(c=>c.emoji===e)).filter(Boolean);
     return choices.filter(c=>category==='all'||c.group===category);
   }
@@ -20,7 +24,7 @@ export function createStickerEditor(canvas, layer, redraw) {
     if(reset){page=0;tray.scrollTop=0;tray.replaceChildren()}
     const matches=filtered(), start=page*120;
     for(const c of matches.slice(start,start+120))makeChoice(c.emoji,c.name);
-    status.textContent=matches.length?`${matches.length} 个`:category==='recent'&&!query?'用过的贴纸会出现在这里':'没有找到，试试其他关键词';
+    status.textContent=matches.length?`${matches.length} items`:category==='recent'&&!query?'Your recent stickers':'No matches';
     more.hidden=matches.length<=(page+1)*120;
     for(const b of tabs.children)b.setAttribute('aria-pressed',String(b.dataset.category===category&&!query));
   }
@@ -28,9 +32,9 @@ export function createStickerEditor(canvas, layer, redraw) {
   search.oninput=()=>{query=search.value.trim().toLowerCase();renderLibrary()};
   more.onclick=()=>{page++;renderLibrary(false)};
   async function loadLibrary(){
-    status.textContent='加载中…';
-    try{const response=await fetch('assets/emoji-catalog.json');if(!response.ok)throw new Error('catalog');choices=await response.json();renderLibrary()}
-    catch{status.textContent='暂时无法加载贴纸';more.hidden=false;more.textContent='重新加载';more.onclick=()=>{more.textContent='显示更多';more.onclick=()=>{page++;renderLibrary(false)};loadLibrary()}}
+    status.textContent='Loading…';
+    try{const response=await fetch('assets/emoji-catalog.json');if(!response.ok)throw new Error('catalog');choices=await response.json();choices.forEach(c=>{c.name=c.english||c.emoji});renderLibrary()}
+    catch{status.textContent='Could not load stickers';more.hidden=false;more.textContent='Retry';more.onclick=()=>{more.textContent='More';more.onclick=()=>{page++;renderLibrary(false)};loadLibrary()}}
   }
   loadLibrary();
   const clamp = v => Math.max(0, Math.min(1, v));
@@ -38,8 +42,11 @@ export function createStickerEditor(canvas, layer, redraw) {
     const r = canvas.getBoundingClientRect();
     return {x: clamp((e.clientX-r.left)/r.width), y: clamp((e.clientY-r.top)/r.height), inside: e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom};
   }
-  function add(emoji, name, point = {x:.5,y:.5}) {
-    const item = {id:++nextId,emoji,name,x:point.x,y:point.y,size:.22,angle:0};
+  async function add(emoji, name, point = {x:.5,y:.5}) {
+    const asset=art.find(a=>a.emoji===emoji);
+    if(asset&&!artImages.has(emoji)){try{const im=new Image();im.src=asset.src;await im.decode();artImages.set(emoji,im)}catch{status.textContent='Could not load sticker';return}}
+
+    const item = {id:++nextId,emoji,name,x:point.x,y:point.y,size:.3,angle:0,ratio:artImages.has(emoji)?artImages.get(emoji).naturalHeight/artImages.get(emoji).naturalWidth:1};
     items.push(item); selected=item; redraw();
     recent=[emoji,...recent.filter(e=>e!==emoji)].slice(0,32);
     try{localStorage.setItem('petal-recent-emoji',JSON.stringify(recent))}catch{}
@@ -51,7 +58,7 @@ export function createStickerEditor(canvas, layer, redraw) {
       if(!box) {
         box=document.createElement('div');box.className='placed-sticker';box.dataset.id=item.id;
         const body=document.createElement('button');body.className='sticker-body';
-        body.setAttribute('aria-label',`${item.name}贴纸，方向键移动，Delete 删除`);
+        body.setAttribute('aria-label',`${item.name}: arrow keys to move, Delete to remove`);
         body.addEventListener('pointerdown',e=>move(e,item,body));
         body.onclick=()=>{selected=item;sync()};
         body.onkeydown=e=>{
@@ -60,8 +67,8 @@ export function createStickerEditor(canvas, layer, redraw) {
           const delta={ArrowLeft:[-.01,0],ArrowRight:[.01,0],ArrowUp:[0,-.01],ArrowDown:[0,.01]}[e.key];
           if(delta){e.preventDefault();selected=item;item.x=clamp(item.x+delta[0]);item.y=clamp(item.y+delta[1]);redraw()}
         };
-        const close=document.createElement('button');close.className='sticker-handle sticker-remove';close.textContent='×';close.setAttribute('aria-label',`删除${item.name}贴纸`);close.onclick=()=>remove(item);
-        const resize=document.createElement('button');resize.className='sticker-handle sticker-resize';resize.textContent='↘';resize.setAttribute('aria-label',`缩放${item.name}贴纸`);resize.title='拖动缩放';
+        const close=document.createElement('button');close.className='sticker-handle sticker-remove';close.textContent='×';close.setAttribute('aria-label',`Remove ${item.name}`);close.onclick=()=>remove(item);
+        const resize=document.createElement('button');resize.className='sticker-handle sticker-resize';resize.textContent='↘';resize.setAttribute('aria-label',`Resize ${item.name}`);resize.title='Drag to resize';
         resize.onpointerdown=e=>{
           if(e.button!==0)return;e.preventDefault();selected=item;resize.setPointerCapture(e.pointerId);
           const rect=canvas.getBoundingClientRect(),cx=rect.left+item.x*rect.width,cy=rect.top+item.y*rect.height;
@@ -70,7 +77,7 @@ export function createStickerEditor(canvas, layer, redraw) {
           const end=()=>{resize.onpointermove=null;resize.onpointerup=null;resize.onpointercancel=null};resize.onpointerup=end;resize.onpointercancel=end;
         };
         resize.onkeydown=e=>{if(['ArrowUp','ArrowRight','ArrowDown','ArrowLeft','+','-'].includes(e.key)){e.preventDefault();item.size=Math.max(.08,Math.min(.8,item.size+(['ArrowUp','ArrowRight','+'].includes(e.key)?.02:-.02)));redraw()}};
-        const rotate=document.createElement('button');rotate.className='sticker-handle sticker-rotate';rotate.textContent='↻';rotate.setAttribute('aria-label',`旋转${item.name}贴纸`);rotate.title='拖动旋转，方向键微调';
+        const rotate=document.createElement('button');rotate.className='sticker-handle sticker-rotate';rotate.textContent='↻';rotate.setAttribute('aria-label',`Rotate ${item.name}`);rotate.title='Drag to rotate';
         rotate.onpointerdown=e=>{
           if(e.button!==0)return;e.preventDefault();selected=item;rotate.setPointerCapture(e.pointerId);
           const rect=canvas.getBoundingClientRect(),cx=rect.left+item.x*rect.width,cy=rect.top+item.y*rect.height;
@@ -83,7 +90,7 @@ export function createStickerEditor(canvas, layer, redraw) {
       }
       box.style.transform=`translate(-50%,-50%) rotate(${item.angle}rad)`;
       box.style.left=`${item.x*100}%`;box.style.top=`${item.y*100}%`;
-      box.style.width=`${item.size*100}%`;box.style.height=`${item.size*canvas.width/canvas.height*100}%`;
+      box.style.width=`${item.size*100}%`;box.style.height=`${item.size*(item.ratio||1)*canvas.width/canvas.height*100}%`;
       box.dataset.selected=String(selected===item);
       box.querySelector('.sticker-body').setAttribute('aria-pressed',String(selected===item));
       box.querySelectorAll('.sticker-handle').forEach(b=>b.hidden=selected!==item);
@@ -99,7 +106,7 @@ export function createStickerEditor(canvas, layer, redraw) {
   }
   function remove(item) {const index=items.indexOf(item);if(index>=0)items.splice(index,1);selected=null;redraw()}
   function makeChoice(emoji,name) {
-    const button=document.createElement('button');button.textContent=emoji;button.setAttribute('aria-label',`添加${name}贴纸`);
+    const button=document.createElement('button');const asset=art.find(a=>a.emoji===emoji);if(asset){const img=new Image();img.src=asset.src;img.alt=name;img.draggable=false;button.append(img)}else button.textContent=emoji;button.setAttribute('aria-label',`Add ${name}`);
     let dragged=false;
     button.onclick=()=>{if(!dragged)add(emoji,name);dragged=false};
     button.onpointerdown=e=>{
@@ -109,7 +116,7 @@ export function createStickerEditor(canvas, layer, redraw) {
       button.onpointermove=event=>{
         if(Math.hypot(event.clientX-startX,event.clientY-startY)>5)dragged=true;
         if(!dragged)return;
-        if(!ghost){ghost=document.createElement('div');ghost.className='sticker-ghost';ghost.textContent=emoji;ghost.setAttribute('aria-hidden','true');document.body.append(ghost)}
+        if(!ghost){ghost=document.createElement('div');ghost.className='sticker-ghost';if(asset){const img=new Image();img.src=asset.src;img.style.width='70px';ghost.append(img)}else ghost.textContent=emoji;ghost.setAttribute('aria-hidden','true');document.body.append(ghost)}
         ghost.style.left=`${event.clientX}px`;ghost.style.top=`${event.clientY}px`;
       };
       const end=event=>{
@@ -121,5 +128,5 @@ export function createStickerEditor(canvas, layer, redraw) {
     tray.append(button);
   }
   canvas.addEventListener('pointerdown',()=>{selected=null;sync()});
-  return {sync,paint(target){const ctx=target.getContext('2d');ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.globalAlpha=1;ctx.filter='none';ctx.textAlign='center';ctx.textBaseline='middle';for(const item of items){ctx.font=`${item.size*target.width}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;ctx.save();ctx.translate(item.x*target.width,item.y*target.height);ctx.rotate(item.angle);ctx.fillText(item.emoji,0,0);ctx.restore()}ctx.restore()}};
+  return {sync,paint(target){const ctx=target.getContext('2d');ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.globalAlpha=1;ctx.filter='none';ctx.textAlign='center';ctx.textBaseline='middle';for(const item of items){ctx.font=`${item.size*target.width}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;ctx.save();ctx.translate(item.x*target.width,item.y*target.height);ctx.rotate(item.angle);if(artImages.has(item.emoji)){const im=artImages.get(item.emoji),w=item.size*target.width,h=w*item.ratio;ctx.drawImage(im,-w/2,-h/2,w,h)}else ctx.fillText(item.emoji,0,0);ctx.restore()}ctx.restore()}};
 }
