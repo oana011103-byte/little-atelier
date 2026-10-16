@@ -10,7 +10,6 @@ export function createStickerEditor(canvas, layer, redraw) {
   const items = [];
   let selected = null, nextId = 0;
   const tray = document.querySelector('.sticker-tray');
-  const search=document.querySelector('#emojiSearch');
   const tabs=document.querySelector('.emoji-categories');
   const status=document.querySelector('#emojiStatus');
   const more=document.querySelector('#emojiMore');
@@ -28,8 +27,7 @@ export function createStickerEditor(canvas, layer, redraw) {
     more.hidden=matches.length<=(page+1)*120;
     for(const b of tabs.children)b.setAttribute('aria-pressed',String(b.dataset.category===category&&!query));
   }
-  for(const [id,label] of categories){const b=document.createElement('button');b.textContent=label;b.dataset.category=id;b.onclick=()=>{category=id;query='';search.value='';renderLibrary()};tabs.append(b)}
-  search.oninput=()=>{query=search.value.trim().toLowerCase();renderLibrary()};
+  for(const [id,label] of categories){const b=document.createElement('button');b.textContent=label;b.dataset.category=id;b.onclick=()=>{category=id;query='';renderLibrary()};tabs.append(b)}
   more.onclick=()=>{page++;renderLibrary(false)};
   async function loadLibrary(){
     status.textContent='Loading…';
