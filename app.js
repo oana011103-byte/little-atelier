@@ -1,18 +1,19 @@
+import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=wizard21';
 import {renderFrame} from './frame-art.js?v=wizard21';
 import {textures,textureSwatch,loadTexture} from './textures.js?v=wizard21';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
 const layouts=[{id:'classic',name:'Classic 4-cut',count:4,cols:1,kind:'strip'},{id:'trio',name:'Film 3-cut',count:3,cols:1,kind:'strip'},{id:'duo',name:'Double',count:2,cols:1,kind:'strip'},{id:'grid',name:'Wide 4-cut',count:4,cols:2,kind:'special'},{id:'single',name:'Polaroid',count:1,cols:1,kind:'special'},{id:'six',name:'Basic 6-cut',count:6,cols:2,kind:'special'}];
-const state={frameCategory:'all',step:1,layout:layouts[0],category:'all',color:'#fffaf0',frame:'plain',caption:'',filter:'original',photos:[],demo:true,stream:null,busy:false,token:0};
+const state={frameCategory:'all',step:1,layout:layouts[0],category:'all',color:'#fffaf0',frame:'plain',caption:'',filter:'original',photos:[],demo:true,stream:null,busy:false,token:0,timer:5,mode:'single',cameraStarting:false,cameraReady:false,cameraError:''};
 const stickerEditor=createStickerEditor($('#strip'),$('.sticker-layer'),draw);
 const sample=new Image();sample.src='assets/portrait.jpg';sample.onload=draw;
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('show'),4000)}
-function stopCamera(){state.token++;state.busy=false;state.stream?.getTracks().forEach(t=>t.stop());state.stream=null}
+function stopCamera(){state.token++;state.busy=false;state.cameraStarting=false;state.cameraReady=false;state.stream?.getTracks().forEach(t=>t.stop());state.stream=null}
 function setStep(n){
  if(state.busy)return toast('Please wait for the current shot.');
  if(n>=3&&state.photos.length<state.layout.count)return toast(`Take or upload ${state.layout.count} photos first.`);
- if(n!==2)stopCamera();state.step=n;render();
+ if(n!==2){stopCamera();state.cameraError='';}state.step=n;render();
 }
 function title(t){return `<div class="title-row"><h2>${t}</h2></div>`}
 function next(label,id='next'){return `<button class="primary" id="${id}">${label} <span>→</span></button>`}
@@ -26,9 +27,13 @@ function render(){
  panel.innerHTML=title('Choose your layout')+`<div class="layout-grid">${layouts.map(l=>`<button class="layout-card ${l.id===state.layout.id?'selected':''}" data-layout="${l.id}" aria-pressed="${l.id===state.layout.id}"><span class="layout-icon ${l.id}">${'<b></b>'.repeat(l.count)}</span><span class="layout-name">${l.name}</span></button>`).join('')}</div><p class="hint">Classic strips · 1:3 proportions</p><button class="primary" id="toCamera" aria-label="Open camera"><span aria-hidden="true">📷</span></button>`;
  panel.querySelectorAll('[data-layout]').forEach(b=>b.onclick=()=>{const scroll=$('.layout-grid').scrollLeft;state.layout=layouts.find(l=>l.id===b.dataset.layout);render();$('.layout-grid').scrollLeft=scroll});$('#toCamera').onclick=()=>setStep(2);
  }else if(state.step===2){
- panel.innerHTML=title('Make a little memory')+`<div class="camera-box"><div class="camera-empty">Camera preview</div><video id="video" autoplay muted playsinline></video><span class="counter" aria-live="assertive"></span></div><div class="row"><button id="enableCamera">Enable camera</button><button id="upload">Upload photos</button><input type="file" id="files" accept="image/*" multiple hidden></div><div class="row"><label>Timer <select id="delay"><option value="5">5 sec</option><option value="3">3 sec</option><option value="0">Off</option></select></label><label>Mode <select id="mode"><option value="single">One at a time</option><option value="auto">Auto sequence</option></select></label></div><div class="thumbnails"></div><p class="hint">${Math.min(state.photos.length,state.layout.count)} / ${state.layout.count} photos · take your time between poses</p><button class="primary" id="capture" ${state.stream?'':'disabled'}>${state.photos.length>=state.layout.count?'Retake photos':'Take photo'} <span>📷</span></button><button class="secondary" id="toEdit" ${state.photos.length>=state.layout.count?'':'disabled'}>Choose borders →</button>`;
+ panel.innerHTML=title('Make a little memory')+`<div class="camera-box"><div class="camera-empty">Camera preview</div><video id="video" autoplay muted playsinline></video><span class="counter" aria-live="assertive"></span></div><div class="row"><button id="enableCamera">Enable camera</button><button id="upload">Upload photos</button><input type="file" id="files" accept="image/*" multiple hidden></div><div class="camera-options"><fieldset><legend>Timer</legend><div class="segmented">${[0,3,5,10].map(n=>`<button type="button" data-timer="${n}" aria-pressed="${state.timer===n}">${n?n+'s':'Off'}</button>`).join('')}</div></fieldset><fieldset><legend>Mode</legend><div class="segmented">${[['single','Single shot'],['auto','Auto sequence']].map(([id,label])=>`<button type="button" data-mode="${id}" aria-pressed="${state.mode===id}">${label}</button>`).join('')}</div></fieldset></div><p id="cameraStatus" class="camera-status" role="status" hidden></p><div class="thumbnails"></div><p class="hint">${Math.min(state.photos.length,state.layout.count)} / ${state.layout.count} photos · take your time between poses</p><button class="primary" id="capture" disabled>${state.photos.length>=state.layout.count?'Retake photos':'Take photo'} <span>📷</span></button><button class="secondary" id="toEdit" ${state.photos.length>=state.layout.count?'':'disabled'}>Choose borders →</button>`;
  state.photos.slice(0,state.layout.count).forEach(im=>{const el=new Image();el.src=im.src;el.alt='Captured photo';$('.thumbnails').append(el)});
- if(state.stream)attachVideo();$('#enableCamera').onclick=startCamera;$('#upload').onclick=()=>$('#files').click();$('#files').onchange=upload;$('#capture').onclick=capture;$('#toEdit').onclick=()=>setStep(3);
+ $('#enableCamera').onclick=startCamera;
+ panel.querySelectorAll('[data-timer]').forEach(b=>b.onclick=()=>{if(state.busy)return;state.timer=+b.dataset.timer;panel.querySelectorAll('[data-timer]').forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset.timer===state.timer)))});
+ panel.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(state.busy)return;state.mode=b.dataset.mode;panel.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.mode===state.mode)))});
+ if(state.stream)resumeCamera();else if(state.cameraStarting){$('#enableCamera').disabled=true;cameraStatus('Waiting for camera permission…')}else if(state.cameraError)cameraStatus(state.cameraError,true);
+ $('#upload').onclick=()=>$('#files').click();$('#files').onchange=upload;$('#capture').onclick=capture;$('#toEdit').onclick=()=>setStep(3);
  }else if(state.step===3){
  panel.innerHTML=title('Find your finish')+`<label class="label" for="filter">Photo filter</label><select id="filter" class="filter-select"><option value="original">Original</option><option value="bw">Black & white</option><option value="warm">Vintage</option><option value="soft">Soft</option></select>`+next('Add stickers');$('#filter').value=state.filter;$('#filter').onchange=e=>{state.filter=e.target.value;draw()};$('#next').onclick=()=>setStep(4);
  }else if(state.step===4){
@@ -38,14 +43,43 @@ function render(){
  }
  draw();
 }
-function attachVideo(){const v=$('#video');v.style.display='block';v.srcObject=state.stream;$('.camera-empty').style.display='none';v.play().catch(()=>{});}
-async function startCamera(){if(state.stream)return;const token=state.token;$('#enableCamera').disabled=true;try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('unsupported');const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280}},audio:false});if(state.step!==2||token!==state.token){stream.getTracks().forEach(t=>t.stop());return}state.stream=stream;attachVideo();$('#capture').disabled=false;$('#enableCamera').textContent='Camera is on'}catch(e){toast(e.name==='NotAllowedError'?'Allow camera access in your browser, or upload photos.':'No camera found. Connect one or upload photos.');if($('#enableCamera'))$('#enableCamera').disabled=false}}
+function cameraStatus(message,error=false){const el=$('#cameraStatus');if(!el)return;el.hidden=!message;el.textContent=message;el.classList.toggle('error',error)}
+function cameraFailed(error,stream,token){
+ stream?.getTracks().forEach(t=>t.stop());
+ if(token!==state.token||state.step!==2)return;
+ state.stream=null;state.cameraReady=false;state.cameraStarting=false;state.cameraError=cameraMessage(error);
+ const v=$('#video');if(v){v.srcObject=null;v.style.display='none'}
+ if($('.camera-empty')){$('.camera-empty').style.display='block';$('.camera-empty').textContent='Camera unavailable'}
+ $('#enableCamera').disabled=false;$('#enableCamera').textContent='Retry camera';$('#capture').disabled=true;cameraStatus(state.cameraError,true);
+}
+async function attachVideo(stream,token){
+ const v=$('#video');if(!v)return;
+ state.cameraReady=false;$('#capture').disabled=true;
+ v.muted=true;v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');v.style.display='block';v.srcObject=stream;
+ cameraStatus('Starting camera…');
+ await waitForVideo(v);
+ if(state.step!==2||token!==state.token||$('#video')!==v||state.stream!==stream)return;
+ state.cameraReady=true;state.cameraError='';$('.camera-empty').style.display='none';$('#capture').disabled=state.busy;$('#enableCamera').disabled=false;$('#enableCamera').textContent='Restart camera';cameraStatus('');
+}
+async function resumeCamera(){const stream=state.stream,token=state.token;try{await attachVideo(stream,token)}catch(e){if(state.stream===stream)cameraFailed(e,stream,token)}}
+async function startCamera(){
+ if(state.cameraStarting||state.busy)return;
+ stopCamera();const token=state.token;state.cameraStarting=true;state.cameraError='';$('#enableCamera').disabled=true;$('#capture').disabled=true;cameraStatus('Waiting for camera permission…');let stream;
+ try{
+  if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw Object.assign(new Error('Unsupported camera'),{name:'CameraUnsupported'});
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'user'}},audio:false})}catch(e){if(e.name!=='OverconstrainedError')throw e;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
+  if(state.step!==2||token!==state.token){stream.getTracks().forEach(t=>t.stop());return}
+  state.stream=stream;
+  stream.getVideoTracks().forEach(track=>track.addEventListener('ended',()=>{if(state.stream===stream)cameraFailed({name:'NotReadableError'},stream,token)},{once:true}));
+  await attachVideo(stream,token);
+ }catch(e){cameraFailed(e,stream,token)}finally{if(token===state.token)state.cameraStarting=false}
+}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 async function capture(){
- if(state.busy||!state.stream)return;const v=$('#video');if(!v.videoWidth)return toast('Camera is getting ready.');
+ if(state.busy||!state.stream||!state.cameraReady)return;const v=$('#video');if(v.readyState<2||!v.videoWidth)return toast('Camera is getting ready.');
  if(state.photos.length>=state.layout.count)state.photos=[];
- state.busy=true;state.demo=false;const token=state.token,delay=+$('#delay').value,auto=$('#mode').value==='auto',total=auto?state.layout.count-state.photos.length:1;
- $('#capture').disabled=true;$('#upload').disabled=true;
+ state.busy=true;state.demo=false;const token=state.token,delay=state.timer,auto=state.mode==='auto',total=auto?state.layout.count-state.photos.length:1;
+ $('#capture').disabled=true;$('#upload').disabled=true;$('#enableCamera').disabled=true;document.querySelectorAll('.segmented button').forEach(b=>b.disabled=true);
  try{for(let i=0;i<total;i++){
   for(let j=delay;j>0;j--){$('.counter').textContent=j;await wait(1000);if(token!==state.token)return}
   $('.counter').textContent='♡';const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;const ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0);state.photos.push(await loadImage(c.toDataURL('image/jpeg',.95)));draw();await wait(auto?1500:350);if(token!==state.token)return;
