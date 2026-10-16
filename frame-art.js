@@ -1,4 +1,4 @@
-import {paintTexture} from './textures.js?v=fit25';
+import {paintTexture} from './textures.js?v=restore26';
 function darkColor(hex){const v=hex.replace('#','');const rgb=[0,2,4].map(i=>parseInt(v.slice(i,i+2),16));return rgb[0]*.299+rgb[1]*.587+rgb[2]*.114<130}
 function random(seed=71){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}}
 function paper(ctx,w,h,color){

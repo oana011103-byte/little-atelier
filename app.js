@@ -1,7 +1,7 @@
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
-import {createStickerEditor} from './sticker-editor.js?v=fit25';
-import {renderFrame} from './frame-art.js?v=fit25';
-import {textures,textureSwatch,loadTexture} from './textures.js?v=fit25';
+import {createStickerEditor} from './sticker-editor.js?v=restore26';
+import {renderFrame} from './frame-art.js?v=restore26';
+import {textures,textureSwatch,loadTexture} from './textures.js?v=restore26';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
 const layouts=[{id:'classic',name:'Classic 4-cut',count:4,cols:1,kind:'strip'},{id:'trio',name:'Film 3-cut',count:3,cols:1,kind:'strip'},{id:'duo',name:'Double',count:2,cols:1,kind:'strip'},{id:'grid',name:'Wide 4-cut',count:4,cols:2,kind:'special'},{id:'single',name:'Polaroid',count:1,cols:1,kind:'special'},{id:'six',name:'Basic 6-cut',count:6,cols:2,kind:'special'}];
