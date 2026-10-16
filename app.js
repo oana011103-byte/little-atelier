@@ -1,8 +1,8 @@
 import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=logo30';
-import {renderFrame} from './frame-art.js?v=retro32';
-import {textures,textureSwatch,loadTexture} from './textures.js?v=logo30';
+import {renderFrame} from './frame-art.js?v=borders33';
+import {textures,textureSwatch,loadTexture} from './textures.js?v=borders33';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
 import {layouts} from './layouts.js?v=logo30';
@@ -113,6 +113,7 @@ function renderFrameLibrary(){
  const grid=$('#frameGrid');
  const colors='<label class="custom-material" title="Custom color"><input type="color" id="customColor" value="'+state.color+'" aria-label="Custom border color"></label>'+palette.map(([name,color])=>`<button class="material-swatch" data-color="${color}" style="background:${color}" aria-label="${name}" title="${name}"></button>`).join('');
  const patterns=textures.filter(t=>borderCategory==='All'||t.category===borderCategory).map(t=>`<button class="material-swatch" data-material="${t.id}" aria-label="${t.name}" title="${t.name}"><img src="${textureSwatch(t.id)}" alt="" draggable="false"></button>`).join('');
+ grid.scrollTop=0;
  grid.innerHTML=(['All','Solid colors'].includes(borderCategory)?colors:'')+(borderCategory==='Solid colors'?'':patterns);
  grid.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{materialRequest++;state.frame='plain';state.color=b.dataset.color;draw()});
  grid.querySelectorAll('[data-material]').forEach(b=>b.onclick=async()=>{const request=++materialRequest;b.setAttribute('aria-busy','true');try{await loadTexture(b.dataset.material);if(request!==materialRequest)return;state.frame=b.dataset.material;state.color=textures.find(t=>t.id===state.frame).bg;draw()}catch{toast('Could not load material. Please retry.')}finally{b.removeAttribute('aria-busy')}});
