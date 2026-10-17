@@ -27,3 +27,6 @@ body[data-step="1"] .controls{background:transparent}
 .home-signature{width:clamp(140px,19vw,220px);margin-top:12px;margin-bottom:10px}
 .home-prompt{font-family:"Courier New",monospace}
 @media(max-width:650px){header{gap:12px}.wordmark img{width:108px}.header-right{gap:17px}.header-signature{width:84px}#navAbout{font-size:11px}.step{font-size:11px;padding:8px 9px}.title-row h2,h2{font-size:21px}.frame-picker-title h2,.sticker-picker h2{font-size:19px}.home-signature{width:175px}.home::after{background-size:650px auto}}
+
+body[data-step="4"] .controls{display:none}
+body[data-step="4"] .sticker-picker{grid-row:1 / span 2}

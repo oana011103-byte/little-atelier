@@ -42,7 +42,7 @@ function render(){
  }else if(state.step===3){
  panel.innerHTML=title('Find your finish')+`<label class="label" for="filter">Photo filter</label><select id="filter" class="filter-select"><option value="retro">Retro monochrome</option><option value="original">Original</option><option value="bw">Black & white</option><option value="warm">Vintage</option><option value="soft">Soft</option></select><div id="retroControls"></div>`+next('Add stickers');$('#filter').value=state.filter;$('#filter').onchange=e=>{state.filter=e.target.value;renderRetroControls();draw()};renderRetroControls();$('#next').onclick=()=>setStep(4);
  }else if(state.step===4){
- panel.innerHTML=title('Make it yours')+`<p class="hint">Tap to add. Drag, resize & rotate on your photo.</p><input class="text-input" id="caption" aria-label="Optional caption" maxlength="40" placeholder="A little note (optional)">`+next('Ready to save');$('#caption').value=state.caption;$('#caption').oninput=e=>{state.caption=e.target.value;draw()};$('#next').onclick=()=>setStep(5);
+ panel.innerHTML=next('Ready to save');$('#next').onclick=()=>setStep(5);
  }else{
  panel.innerHTML=`<div class="save-options"><label for="format">Save as </label><select id="format"><option value="png">PNG</option><option value="jpeg">JPG</option></select></div><p class="save-hint">To save to Photos, press and hold your photo, or tap Save / Share and choose Save Image when available. Download saves a file.</p>`+`<button class="primary" id="download">Download</button>`+`<button class="secondary" id="share">Save / Share</button><button class="text-back" id="again">Back to stickers</button>`;$('#download').onclick=download;$('#share').onclick=sharePhoto;$('#again').onclick=()=>setStep(4);
 
