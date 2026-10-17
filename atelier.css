@@ -1,0 +1,29 @@
+/* Visual refinements from the October 17 Illustrator review. */
+body{background-color:#fff5f6;background-image:linear-gradient(#fff5f680,#fff5f680),url('assets/brand/pink-paper.webp');background-position:center top;background-size:auto,900px auto;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#403337}
+header{gap:20px}
+.wordmark{padding:8px 0;line-height:1;letter-spacing:normal}
+.wordmark img{display:block;width:125px;height:auto}
+.header-right{display:flex;align-items:center;gap:25px}
+.header-signature{display:block;width:112px;height:auto}
+#navAbout{font-size:12px;font-weight:500;padding:10px 0;color:#68555e}
+.title-row h2,h2{font-family:Georgia,"Times New Roman",serif;font-size:23px;line-height:1.25;font-weight:500;letter-spacing:-.025em;color:#443339}
+.step{font-size:12px;font-weight:600;letter-spacing:.01em;color:#86737b}
+.step.active{color:#543b46;background:#eed6df}
+.label{font-weight:600;font-size:12px;color:#68505c}
+.hint,.preview-heading,.save-hint{color:#88757e}
+.primary,.secondary{font-weight:500;font-size:13px}
+.frame-picker-title h2,.sticker-picker h2{font-size:19px}
+.frame-picker-title span{font-size:11px}
+.border-categories button,.emoji-categories button{font-size:11px;font-weight:500}
+.retro-presets button,.retro-toggle,.retro-reset{font-size:11px;font-weight:500}
+.retro-slider{font-size:11px;font-weight:400;line-height:1.4}
+.retro-slider output{font-size:10px}
+body[data-step="1"] .layout-name{font-size:12px;font-weight:500;letter-spacing:.01em}
+.controls,.frame-picker,.sticker-picker{background:rgba(255,253,253,.9)}
+.preview-area{background:rgba(249,240,243,.8)}
+body[data-step="1"] .controls{background:transparent}
+.home{position:relative;isolation:isolate}
+.home::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:url('assets/brand/pink-paper.webp') center/900px auto repeat;mix-blend-mode:multiply;opacity:.5}
+.home-signature{width:clamp(140px,19vw,220px);margin-top:12px;margin-bottom:10px}
+.home-prompt{font-family:"Courier New",monospace}
+@media(max-width:650px){header{gap:12px}.wordmark img{width:108px}.header-right{gap:17px}.header-signature{width:84px}#navAbout{font-size:11px}.step{font-size:11px;padding:8px 9px}.title-row h2,h2{font-size:21px}.frame-picker-title h2,.sticker-picker h2{font-size:19px}.home-signature{width:175px}.home::after{background-size:650px auto}}

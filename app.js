@@ -7,7 +7,7 @@ import {textures,textureSwatch,loadTexture} from './textures.js?v=assets38';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
 import {layouts} from './layouts.js?v=logo30';
-const state={frameCategory:'all',step:1,layout:layouts[0],category:'all',color:'#fffaf0',frame:'plain',caption:'',filter:'retro',retro:{...retroPresets.soft},retroExpanded:false,photos:[],demo:true,stream:null,busy:false,token:0,timer:5,mode:'single',cameraStarting:false,cameraReady:false,cameraError:''};
+const state={frameCategory:'all',step:1,layout:layouts[0],category:'all',color:'#fffaf0',frame:'plain',caption:'',filter:'retro',retro:{...retroPresets.soft},retroExpanded:true,photos:[],demo:true,stream:null,busy:false,token:0,timer:5,mode:'single',cameraStarting:false,cameraReady:false,cameraError:''};
 const stickerEditor=createStickerEditor($('#strip'),$('.sticker-layer'),draw);
 const sample=new Image();sample.src='assets/portrait.jpg';sample.onload=draw;
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('show'),4000)}
