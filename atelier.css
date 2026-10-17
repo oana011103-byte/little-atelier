@@ -30,3 +30,10 @@ body[data-step="1"] .controls{background:transparent}
 
 body[data-step="4"] .controls{display:none}
 body[data-step="4"] .sticker-picker{grid-row:1 / span 2}
+
+/* Camera-page grey matched to the supplied swatch. */
+body[data-step="2"] .camera-box,
+body[data-step="2"] .row button,
+body[data-step="2"] .segmented button:not([aria-pressed="true"]),
+body[data-step="2"] .page-actions .secondary{background:#d5d3d4}
+body[data-step="2"] .camera-empty{color:#655a60}
