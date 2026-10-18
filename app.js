@@ -2,7 +2,7 @@ import {setupHome} from './home.js?v=home42';
 import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=restart50';
-import {renderFrame} from './frame-art.js?v=caption53';
+import {renderFrame} from './frame-art.js?v=caption54';
 import {textures,textureSwatch,loadTexture} from './textures.js?v=borders47';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);

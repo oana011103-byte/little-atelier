@@ -31,6 +31,7 @@ export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
    let metrics=ctx.measureText(caption);
    const inkHeight=metrics.actualBoundingBoxAscent+metrics.actualBoundingBoxDescent;
    if(inkHeight>0)size*=logoHeight*.5/inkHeight;
+   size*=2/3;
    ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`;
    metrics=ctx.measureText(caption);
    if(metrics.width>available){size*=available/metrics.width;ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`;metrics=ctx.measureText(caption)}
