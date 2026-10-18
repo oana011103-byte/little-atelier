@@ -1,21 +1,13 @@
 import {retroImage} from './retro-filter.js?v=retro32';
-import {paintTexture} from './textures.js?v=assets38';
+import {paintTexture} from './textures.js?v=borders47';
 function darkColor(hex){const v=hex.replace('#','');const rgb=[0,2,4].map(i=>parseInt(v.slice(i,i+2),16));return rgb[0]*.299+rgb[1]*.587+rgb[2]*.114<130}
-function random(seed=71){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}}
-function paper(ctx,w,h,color){
-  ctx.fillStyle=color;ctx.fillRect(0,0,w,h);
-  const r=random();
-  for(let i=0;i<w*h/95;i++){const x=r()*w,y=r()*h;ctx.fillStyle=r()>.55?'rgba(255,255,255,.24)':'rgba(85,66,46,.065)';ctx.fillRect(x,y,1+r()*2,1+r()*2)}
-  ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;
-  for(let i=0;i<130;i++){const x=r()*w,y=r()*h;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+7+r()*24,y+r()*5);ctx.stroke()}
-}
 function photo(ctx,image,x,y,w,h,filter,index,isSample){
  ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();if(image){ctx.filter=filter;const z=isSample?[1,1.2,1.08,1.32,1.1,1][index]:1;const scale=Math.max(w/(image.naturalWidth||image.width),h/(image.naturalHeight||image.height))*z;const dw=(image.naturalWidth||image.width)*scale,dh=(image.naturalHeight||image.height)*scale;ctx.drawImage(image,x+(w-dw)/2,y+(h-dh)*(isSample?.26:.5),dw,dh)}else{ctx.fillStyle='#d5d3d4';ctx.fillRect(x,y,w,h);ctx.fillStyle='#f5f5ee';ctx.font='40px Courier New,monospace';ctx.textAlign='center';ctx.fillText(String(index+1).padStart(2,'0'),x+w/2,y+h/2+15)}ctx.restore();
 }
 export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
  const {count,width:w,height:h,cells}=state.layout;
  const scale=thumbnail?.16:1;canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);const ctx=canvas.getContext('2d');ctx.scale(scale,scale);
- paper(ctx,w,h,state.color);
+ ctx.fillStyle=state.color;ctx.fillRect(0,0,w,h);
  // The material fills the fixed border. Photo apertures are drawn above it.
  paintTexture(ctx,w,h,state.frame);
  for(let i=0;i<count;i++){
