@@ -50,3 +50,16 @@ body[data-step="2"] .camera-empty{color:#655a60}
 /* Keep camera activation and retry prominent below the viewfinder. */
 body[data-step="2"] #enableCamera{margin-inline:auto;min-width:156px;min-height:44px;padding:11px 24px;background:#edcbd9;color:#543b46;border:1px solid #dba5bb;font-size:13px;font-weight:600;transition:background .15s ease}
 body[data-step="2"] #enableCamera:hover:not(:disabled){background:#e4b4c9}
+
+/* Camera actions live inside the viewfinder, leaving options close below. */
+body[data-step="2"] .camera-empty{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;width:100%;max-height:100%;overflow:auto}
+.camera-permission-hint{font-size:12px;margin:10px 0 0;color:#655a60}
+body[data-step="2"] .camera-empty .camera-status{font-size:12px;line-height:1.45;margin:10px 0 0;padding:8px 12px;max-width:480px}
+body[data-step="2"] .camera-empty:has(.camera-status:not([hidden])) .camera-permission-hint{display:none}
+body[data-step="2"] .camera-live .camera-empty{position:absolute;top:10px;right:10px;width:auto;padding:0;overflow:visible}
+body[data-step="2"] .camera-live .camera-permission-hint{display:none}
+body[data-step="2"] .camera-live #enableCamera{min-width:36px;min-height:36px;width:36px;height:36px;padding:0;border-radius:50%;font-size:24px;line-height:1;background:#fff9;backdrop-filter:blur(6px);border-color:#fff8;color:#403337}
+body[data-step="2"] .camera-options{margin-top:12px}
+
+body[data-step="2"] #enableCamera{border-radius:9px}
+body[data-step="2"] .camera-live #enableCamera{border-radius:50%}
