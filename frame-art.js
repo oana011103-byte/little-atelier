@@ -18,6 +18,6 @@ export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
  }
  const logo=state.layout.logo;
  if(logo){ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#292729';ctx.fill(new Path2D(logo.paths.join(' ')),'evenodd')}
- if(state.caption){ctx.textAlign='center';ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#67584f';const photoBottom=Math.max(...cells.map(([,y,,height])=>y+height));const captionSize=Math.max(8,Math.min(28,w*.035,(logo?.top??h)-photoBottom-16));ctx.font=`${captionSize}px Courier New,monospace`;let caption=state.caption;while(ctx.measureText(caption).width>w-140&&caption.length)caption=caption.slice(0,-1);ctx.fillText(caption,w/2,Math.min(h-Math.min(40,h*.045),(logo?.top??h)-12))}
+ if(state.caption){ctx.textAlign='center';ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#67584f';const photoBottom=Math.max(...cells.map(([,y,,height])=>y+height));const captionSize=Math.max(8,Math.min(38,w*.055,(logo?.top??h)-photoBottom-16));ctx.font=`${captionSize}px "Atelier Script", "Songti SC", cursive`;let caption=state.caption;while(ctx.measureText(caption).width>w-140&&caption.length)caption=caption.slice(0,-1);ctx.fillText(caption,w/2,Math.min(h-Math.min(40,h*.045),(logo?.top??h)-12))}
  return {width:w,height:h};
 }

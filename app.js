@@ -2,7 +2,7 @@ import {setupHome} from './home.js?v=home42';
 import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
 import {createStickerEditor} from './sticker-editor.js?v=save39';
-import {renderFrame} from './frame-art.js?v=borders47';
+import {renderFrame} from './frame-art.js?v=caption48';
 import {textures,textureSwatch,loadTexture} from './textures.js?v=borders47';
 import {palette} from './frame-catalog.js?v=wizard21';
 const $=s=>document.querySelector(s);
@@ -42,7 +42,7 @@ function render(){
  }else if(state.step===3){
  panel.innerHTML=title('Find your finish')+`<label class="label" for="filter">Photo filter</label><select id="filter" class="filter-select"><option value="retro">Retro monochrome</option><option value="original">Original</option><option value="bw">Black & white</option><option value="warm">Vintage</option><option value="soft">Soft</option></select><div id="retroControls"></div>`+next('Add stickers');$('#filter').value=state.filter;$('#filter').onchange=e=>{state.filter=e.target.value;renderRetroControls();draw()};renderRetroControls();$('#next').onclick=()=>setStep(4);
  }else if(state.step===4){
- panel.innerHTML=next('Ready to save');$('#next').onclick=()=>setStep(5);
+ panel.innerHTML=`<label class="caption-label" for="caption">Your words</label><input class="text-input caption-input" id="caption" aria-label="DIY text" maxlength="40" placeholder="A little note…">`+next('Ready to save');$('#caption').value=state.caption;$('#caption').oninput=e=>{state.caption=e.target.value;draw()};$('#next').onclick=()=>setStep(5);
  }else{
  panel.innerHTML=`<div class="save-options"><label for="format">Save as </label><select id="format"><option value="png">PNG</option><option value="jpeg">JPG</option></select></div><p class="save-hint">To save to Photos, press and hold your photo, or tap Save / Share and choose Save Image when available. Download saves a file.</p>`+`<button class="primary" id="download">Download</button>`+`<button class="secondary" id="share">Save / Share</button><button class="text-back" id="again">Back to stickers</button>`;$('#download').onclick=download;$('#share').onclick=sharePhoto;$('#again').onclick=()=>setStep(4);
 
@@ -141,6 +141,7 @@ function download(){if(state.photos.length<state.layout.count)return toast('Fini
 document.querySelectorAll('.steps [data-step]').forEach(b=>b.onclick=()=>setStep(+b.dataset.step));$('#toggleDemo').onclick=()=>{state.demo=!state.demo;draw()};$('#navBooth').onclick=()=>setStep(1);$('#navAbout').onclick=()=>$('#about').showModal();$('#about .close').onclick=()=>$('#about').close();$('#about').onclick=e=>{if(e.target===$('#about'))$('#about').close()};
 window.addEventListener('pagehide',stopCamera);
 renderFrameLibrary();render();
+document.fonts.load('24px "Atelier Script"').then(draw).catch(()=>{});
 document.fonts.ready.then(draw);
 
 function fitPreview(w=$('#strip').width,h=$('#strip').height){

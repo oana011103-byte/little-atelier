@@ -28,8 +28,8 @@ body[data-step="1"] .controls{background:transparent}
 .home-prompt{font-family:"Courier New",monospace}
 @media(max-width:650px){header{gap:12px}.wordmark img{width:108px}.header-right{gap:17px}.header-signature{width:84px}#navAbout{font-size:11px}.step{font-size:11px;padding:8px 9px}.title-row h2,h2{font-size:21px}.frame-picker-title h2,.sticker-picker h2{font-size:19px}.home-signature{width:175px}.home::after{background-size:650px auto}}
 
-body[data-step="4"] .controls{display:none}
-body[data-step="4"] .sticker-picker{grid-row:1 / span 2}
+body[data-step="4"] .controls{display:block;padding:14px 18px}
+body[data-step="4"] .sticker-picker{grid-row:2}
 
 /* Camera-page grey matched to the supplied swatch. */
 body[data-step="2"] .camera-box,
@@ -37,3 +37,8 @@ body[data-step="2"] .row button,
 body[data-step="2"] .segmented button:not([aria-pressed="true"]),
 body[data-step="2"] .page-actions .secondary{background:#d5d3d4}
 body[data-step="2"] .camera-empty{color:#655a60}
+
+@font-face{font-family:"Atelier Script";src:url("assets/fonts/Allura-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+.caption-label{display:block;font-size:11px;color:#86737b;margin-bottom:6px}
+.caption-input{font-family:"Atelier Script","Songti SC",cursive;font-size:27px;line-height:1.2;padding:8px 12px;background:#f7f0f3}
+.caption-input::placeholder{color:#9b858f;opacity:1}
