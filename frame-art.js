@@ -16,8 +16,28 @@ export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
   const f={original:'none',bw:'grayscale(1)',warm:'sepia(.35) saturate(.8)',soft:'contrast(.88) brightness(1.12) saturate(.75)'}[state.filter];
   photo(ctx,im&&state.filter==='retro'?retroImage(im,state.retro):im,x,y,cellW,cellH,f||'none',i,im===sample);
  }
- const logo=state.layout.logo;
- if(logo){ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#292729';ctx.fill(new Path2D(logo.paths.join(' ')),'evenodd')}
- if(state.caption){ctx.textAlign='center';ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#67584f';const photoBottom=Math.max(...cells.map(([,y,,height])=>y+height));const captionSize=Math.max(8,Math.min(38,w*.055,(logo?.top??h)-photoBottom-16));ctx.font=`${captionSize}px "Atelier Script", "Songti SC", cursive`;let caption=state.caption;while(ctx.measureText(caption).width>w-140&&caption.length)caption=caption.slice(0,-1);ctx.fillText(caption,w/2,Math.min(h-Math.min(40,h*.045),(logo?.top??h)-12))}
+ const logo=state.layout.logo,caption=state.caption?.trim();
+ ctx.fillStyle=darkColor(state.color)?'#fff6e6':'#292729';
+ if(logo){
+  ctx.save();
+  if(caption){
+   const coordinates=logo.paths.join(' ').match(/-?\d+(?:\.\d+)?/g).map(Number);
+   const xs=coordinates.filter((_,i)=>i%2===0),left=Math.min(...xs),right=Math.max(...xs);
+   const margin=w*.07,gap=w*.04,shift=w-margin-right;
+   ctx.translate(shift,0);
+   ctx.fill(new Path2D(logo.paths.join(' ')),'evenodd');
+   ctx.translate(-shift,0);
+   const available=left+shift-gap-margin;
+   let size=Math.min(48,w*.08);
+   ctx.textAlign='left';ctx.textBaseline='alphabetic';
+   ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`;
+   const measured=ctx.measureText(caption).width;
+   if(measured>available){size*=available/measured;ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`}
+   const descent=ctx.measureText(caption).actualBoundingBoxDescent||0;
+   ctx.fillText(caption,margin,logo.bottom-descent);
+  }else ctx.fill(new Path2D(logo.paths.join(' ')),'evenodd');
+  ctx.restore();
+ }
+
  return {width:w,height:h};
 }
