@@ -23,18 +23,24 @@ export function renderFrame(canvas,state,sample,{thumbnail=false}={}){
   if(caption){
    const coordinates=logo.paths.join(' ').match(/-?\d+(?:\.\d+)?/g).map(Number);
    const xs=coordinates.filter((_,i)=>i%2===0),left=Math.min(...xs),right=Math.max(...xs);
-   const margin=w*.07,gap=w*.04,shift=w-margin-right;
-   ctx.translate(shift,0);
-   ctx.fill(new Path2D(logo.paths.join(' ')),'evenodd');
-   ctx.translate(-shift,0);
-   const available=left+shift-gap-margin;
-   let size=Math.min(48,w*.08);
-   ctx.textAlign='left';ctx.textBaseline='alphabetic';
+   const logoScale=.8,logoHeight=(logo.bottom-logo.top)*logoScale;
+   const gap=6,available=w*.8;
+   let size=logoHeight*.5;
+   ctx.textAlign='center';ctx.textBaseline='alphabetic';
    ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`;
-   const measured=ctx.measureText(caption).width;
-   if(measured>available){size*=available/measured;ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`}
-   const descent=ctx.measureText(caption).actualBoundingBoxDescent||0;
-   ctx.fillText(caption,margin,logo.bottom-descent);
+   let metrics=ctx.measureText(caption);
+   const inkHeight=metrics.actualBoundingBoxAscent+metrics.actualBoundingBoxDescent;
+   if(inkHeight>0)size*=logoHeight*.5/inkHeight;
+   ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`;
+   metrics=ctx.measureText(caption);
+   if(metrics.width>available){size*=available/metrics.width;ctx.font=`${size}px "Atelier Script", "Songti SC", cursive`;metrics=ctx.measureText(caption)}
+   const textHeight=metrics.actualBoundingBoxAscent+metrics.actualBoundingBoxDescent;
+   const groupHeight=logoHeight+gap+textHeight;
+   const photoBottom=Math.max(...cells.map(([,y,,height])=>y+height));
+   const top=Math.max(photoBottom+6,Math.min((logo.top+logo.bottom-groupHeight)/2,h-8-groupHeight));
+   ctx.save();ctx.translate(w/2-(left+right)*logoScale/2,top-logo.top*logoScale);ctx.scale(logoScale,logoScale);
+   ctx.fill(new Path2D(logo.paths.join(' ')),'evenodd');ctx.restore();
+   ctx.fillText(caption,w/2,top+logoHeight+gap+metrics.actualBoundingBoxAscent);
   }else ctx.fill(new Path2D(logo.paths.join(' ')),'evenodd');
   ctx.restore();
  }
