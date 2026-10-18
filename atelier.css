@@ -46,3 +46,7 @@ body[data-step="2"] .camera-empty{color:#655a60}
 .wordmark{font:bold 28px Georgia,serif;letter-spacing:-1px}
 @media(max-width:650px){.wordmark{font-size:24px}header{gap:8px}.header-right{gap:12px}.header-signature{width:70px}}
 @media(max-width:370px){.wordmark{font-size:21px}.wordmark span{margin-left:6px}.header-signature{width:58px}}
+
+/* Keep camera activation and retry prominent below the viewfinder. */
+body[data-step="2"] #enableCamera{margin-inline:auto;min-width:156px;min-height:44px;padding:11px 24px;background:#edcbd9;color:#543b46;border:1px solid #dba5bb;font-size:13px;font-weight:600;transition:background .15s ease}
+body[data-step="2"] #enableCamera:hover:not(:disabled){background:#e4b4c9}
