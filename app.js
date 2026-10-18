@@ -1,7 +1,7 @@
 import {setupHome} from './home.js?v=home42';
 import {retroPresets} from './retro-filter.js?v=retro32';
 import {waitForVideo,cameraMessage} from './camera-runtime.js?v=camera22';
-import {createStickerEditor} from './sticker-editor.js?v=save39';
+import {createStickerEditor} from './sticker-editor.js?v=restart50';
 import {renderFrame} from './frame-art.js?v=caption48';
 import {textures,textureSwatch,loadTexture} from './textures.js?v=borders47';
 import {palette} from './frame-catalog.js?v=wizard21';
@@ -44,7 +44,7 @@ function render(){
  }else if(state.step===4){
  panel.innerHTML=`<label class="caption-label" for="caption">Your words</label><input class="text-input caption-input" id="caption" aria-label="DIY text" maxlength="40" placeholder="A little note…">`+next('Ready to save');$('#caption').value=state.caption;$('#caption').oninput=e=>{state.caption=e.target.value;draw()};$('#next').onclick=()=>setStep(5);
  }else{
- panel.innerHTML=`<div class="save-options"><label for="format">Save as </label><select id="format"><option value="png">PNG</option><option value="jpeg">JPG</option></select></div><p class="save-hint">To save to Photos, press and hold your photo, or tap Save / Share and choose Save Image when available. Download saves a file.</p>`+`<button class="primary" id="download">Download</button>`+`<button class="secondary" id="share">Save / Share</button><button class="text-back" id="again">Back to stickers</button>`;$('#download').onclick=download;$('#share').onclick=sharePhoto;$('#again').onclick=()=>setStep(4);
+ panel.innerHTML=`<div class="save-options"><label for="format">Save as </label><select id="format"><option value="png">PNG</option><option value="jpeg">JPG</option></select></div><p class="save-hint">To save to Photos, press and hold your photo, or tap Save / Share and choose Save Image when available. Download saves a file.</p>`+`<button class="primary" id="download">Download</button>`+`<button class="secondary" id="share">Save / Share</button><button class="text-back" id="again">Try again</button>`;$('#download').onclick=download;$('#share').onclick=sharePhoto;$('#again').onclick=startAgain;
 
  }
  const actions=$('#pageActions');
@@ -131,6 +131,13 @@ function syncFrameSelection(){
  if($('#customColor'))$('#customColor').value=state.color;
 }
 let savedImageUrl=null,savedBlob=null,saveRevision=0;
+function startAgain(){
+ stopCamera();state.photos=[];state.caption='';state.demo=false;
+ stickerEditor.clear();saveRevision++;savedBlob=null;
+ if(savedImageUrl){URL.revokeObjectURL(savedImageUrl);savedImageUrl=null}
+ $('#saveImage').removeAttribute('src');
+ setStep(1);window.scrollTo({top:0,behavior:'instant'});
+}
 function prepareSavedImage(){const revision=++saveRevision;$('#strip').toBlob(blob=>{if(!blob||revision!==saveRevision)return;savedBlob=blob;if(savedImageUrl)URL.revokeObjectURL(savedImageUrl);savedImageUrl=URL.createObjectURL(blob);$('#saveImage').src=savedImageUrl},'image/png')}
 async function sharePhoto(){
  if(!savedBlob)return toast('Your photo is still getting ready. Please try again.');

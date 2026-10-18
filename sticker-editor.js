@@ -8,7 +8,7 @@ export function createStickerEditor(canvas, layer, redraw) {
   let recent = [];
   try { const saved=JSON.parse(localStorage.getItem('petal-recent-emoji')||'[]'); if(Array.isArray(saved))recent=saved.filter(x=>typeof x==='string').slice(0,32); } catch {}
   const items = [];
-  let selected = null, nextId = 0;
+  let selected = null, nextId = 0, generation = 0;
   const tray = document.querySelector('.sticker-tray');
   const tabs=document.querySelector('.emoji-categories');
   const status=document.querySelector('#emojiStatus');
@@ -42,9 +42,11 @@ export function createStickerEditor(canvas, layer, redraw) {
     return {x: clamp((e.clientX-r.left)/r.width), y: clamp((e.clientY-r.top)/r.height), inside: e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom};
   }
   async function add(emoji, name, point = {x:.5,y:.5}) {
+    const addedInGeneration=generation;
     const asset=art.find(a=>a.emoji===emoji);
     if(asset&&!artImages.has(emoji)){try{const im=new Image();im.src=asset.src;await im.decode();artImages.set(emoji,im)}catch{status.textContent='Could not load sticker';return}}
 
+    if(addedInGeneration!==generation)return;
     const item = {id:++nextId,emoji,name,x:point.x,y:point.y,size:.3,angle:0,ratio:artImages.has(emoji)?artImages.get(emoji).naturalHeight/artImages.get(emoji).naturalWidth:1};
     items.push(item); selected=item; redraw();
     recent=[emoji,...recent.filter(e=>e!==emoji)].slice(0,32);
@@ -131,5 +133,5 @@ export function createStickerEditor(canvas, layer, redraw) {
     if(!selected||e.target.closest('.placed-sticker'))return;
     selected=null;sync();
   });
-  return {sync,paint(target){const ctx=target.getContext('2d');ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.globalAlpha=1;ctx.filter='none';ctx.textAlign='center';ctx.textBaseline='middle';for(const item of items){ctx.font=`${item.size*target.width}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;ctx.save();ctx.translate(item.x*target.width,item.y*target.height);ctx.rotate(item.angle);if(artImages.has(item.emoji)){const im=artImages.get(item.emoji),w=item.size*target.width,h=w*item.ratio;ctx.drawImage(im,-w/2,-h/2,w,h)}else ctx.fillText(item.emoji,0,0);ctx.restore()}ctx.restore()}};
+  return {sync,clear(){generation++;items.length=0;selected=null;sync()},paint(target){const ctx=target.getContext('2d');ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.globalAlpha=1;ctx.filter='none';ctx.textAlign='center';ctx.textBaseline='middle';for(const item of items){ctx.font=`${item.size*target.width}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;ctx.save();ctx.translate(item.x*target.width,item.y*target.height);ctx.rotate(item.angle);if(artImages.has(item.emoji)){const im=artImages.get(item.emoji),w=item.size*target.width,h=w*item.ratio;ctx.drawImage(im,-w/2,-h/2,w,h)}else ctx.fillText(item.emoji,0,0);ctx.restore()}ctx.restore()}};
 }
