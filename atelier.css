@@ -48,13 +48,13 @@ body[data-step="2"] .camera-empty{color:#655a60}
 @media(max-width:370px){.wordmark{font-size:21px}.wordmark span{margin-left:6px}.header-signature{width:58px}}
 
 /* Keep camera activation and retry prominent below the viewfinder. */
-body[data-step="2"] #enableCamera{margin-inline:auto;min-width:156px;min-height:44px;padding:11px 24px;background:#edcbd9;color:#543b46;border:1px solid #dba5bb;font-size:13px;font-weight:600;transition:background .15s ease}
+body[data-step="2"] #enableCamera{margin-inline:auto;min-width:156px;min-height:44px;padding:11px 24px;background:#edcbd9;color:#543b46;border:1px solid #dba5bb;font-size:13px;font-weight:400;transition:background .15s ease}
 body[data-step="2"] #enableCamera:hover:not(:disabled){background:#e4b4c9}
 
 /* Camera actions live inside the viewfinder, leaving options close below. */
 body[data-step="2"] .camera-empty{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;width:100%;max-height:100%;overflow:auto}
-.camera-permission-hint{font-size:12px;margin:10px 0 0;color:#655a60}
-body[data-step="2"] .camera-empty .camera-status{font-size:12px;line-height:1.45;margin:10px 0 0;padding:8px 12px;max-width:480px}
+.camera-permission-hint{font-size:11px;margin:10px 0 0;color:#655a60}
+body[data-step="2"] .camera-empty .camera-status{font-size:11px;line-height:1.45;margin:10px 0 0;padding:8px 12px;max-width:480px}
 body[data-step="2"] .camera-empty:has(.camera-status:not([hidden])) .camera-permission-hint{display:none}
 body[data-step="2"] .camera-live .camera-empty{position:absolute;top:10px;right:10px;width:auto;padding:0;overflow:visible}
 body[data-step="2"] .camera-live .camera-permission-hint{display:none}
